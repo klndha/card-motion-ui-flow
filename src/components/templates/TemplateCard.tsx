@@ -1,8 +1,8 @@
 
 import React from 'react';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader } from '@/components/Card';
+import { Button } from '@/components/Button';
+import { Badge } from '@/components/Badge';
 import { Eye, Trash2, MessageSquare } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 

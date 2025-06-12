@@ -1,298 +1,180 @@
-
 import React, { useState } from 'react';
-import { ArrowLeft } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { useNavigate } from 'react-router-dom';
-import { TemplatePreview } from './TemplatePreview';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/Card';
+import { Button } from '@/components/Button';
+import { Input } from '@/components/Input';
+import { Label } from '@/components/Label';
+import { Separator } from '@/components/Separator';
+import { Badge } from '@/components/Badge';
+import { Progress } from '@/components/Progress';
 import { BasicInfoSection } from './forms/BasicInfoSection';
 import { VariableManager } from './forms/VariableManager';
 import { 
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
-import { useForm } from 'react-hook-form';
-import { Card, CardContent } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
+  Save, 
+  Eye, 
+  Send,
+  Type,
+  Image as ImageIcon,
+  Link,
+  Plus,
+  Minus,
+  Copy,
+  Trash2
+} from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
-interface Variable {
-  id: string;
-  name: string;
-  value: string;
+interface CreateTemplateFormProps {
+  onSubmit: (data: any) => void;
+  onPreview: (data: any) => void;
+  onSendForApproval: (id: string) => void;
 }
 
-interface FormData {
-  templateName: string;
-  category: string;
-  language: string;
-  headerType: 'text' | 'media';
-  headerText: string;
-  bodyText: string;
-  footerText: string;
-  buttonType: 'callToAction' | 'quickReply';
-  buttonText: string;
-  buttonUrl: string;
-}
-
-export function CreateTemplateForm() {
-  const navigate = useNavigate();
+export const CreateTemplateForm: React.FC<CreateTemplateFormProps> = ({ onSubmit, onPreview, onSendForApproval }) => {
   const { toast } = useToast();
-  const [variables, setVariables] = useState<Variable[]>([]);
-  const [previewData, setPreviewData] = useState({
-    headerText: '',
-    bodyText: '',
-    footerText: '',
-    buttonText: '',
-    buttonUrl: '',
+  const [templateData, setTemplateData] = useState({
+    name: '',
+    category: '',
+    language: 'English',
+    content: '',
+    variables: []
   });
+  const [uploadProgress, setUploadProgress] = useState(0);
 
-  const form = useForm<FormData>({
-    defaultValues: {
-      templateName: '',
-      category: 'MARKETING',
-      language: 'English (United Kingdom)',
-      headerType: 'text',
-      headerText: '',
-      bodyText: '',
-      footerText: '',
-      buttonType: 'callToAction',
-      buttonText: '',
-      buttonUrl: 'https://www.example.com',
-    },
-  });
-
-  const handleBack = () => {
-    navigate('/');
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setTemplateData(prevData => ({
+      ...prevData,
+      [name]: value
+    }));
   };
 
-  const addVariable = () => {
-    const newVariable: Variable = {
-      id: Math.random().toString(36).substr(2, 9),
-      name: `variable_${variables.length + 1}`,
-      value: '',
-    };
-    setVariables([...variables, newVariable]);
+  const handleVariableChange = (variables: any[]) => {
+    setTemplateData(prevData => ({
+      ...prevData,
+      variables: variables
+    }));
   };
 
-  const removeVariable = (id: string) => {
-    setVariables(variables.filter(v => v.id !== id));
-  };
-
-  const updateVariable = (id: string, field: 'name' | 'value', value: string) => {
-    setVariables(variables.map(v => 
-      v.id === id ? { ...v, [field]: value } : v
-    ));
-  };
-
-  const resetVariables = () => {
-    setVariables([]);
-  };
-
-  const onSubmit = (data: FormData) => {
-    console.log('Form submitted:', data);
-    console.log('Variables:', variables);
-    
+  const handleSubmit = () => {
+    onSubmit(templateData);
     toast({
-      title: "Template Created Successfully!",
-      description: `Template "${data.templateName}" has been saved and submitted for approval.`,
+      title: "Template Saved",
+      description: `Your template "${templateData.name}" has been saved.`,
     });
-    
-    // Navigate back to templates page after submission
-    setTimeout(() => {
-      navigate('/');
-    }, 2000);
   };
 
-  const updatePreview = (field: string, value: string) => {
-    setPreviewData(prev => ({ ...prev, [field]: value }));
+  const handlePreview = () => {
+    onPreview(templateData);
+    toast({
+      title: "Template Previewed",
+      description: `Previewing template: ${templateData.name}`,
+    });
+  };
+
+  const handleSendForApproval = () => {
+    onSendForApproval("template123"); // Placeholder ID
+    toast({
+      title: "Template Sent for Approval",
+      description: `Template "${templateData.name}" sent for approval.`,
+    });
+  };
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      // Simulate upload progress
+      let progress = 0;
+      const interval = setInterval(() => {
+        progress += 10;
+        setUploadProgress(progress);
+        if (progress >= 100) {
+          clearInterval(interval);
+          toast({
+            title: "File Uploaded",
+            description: `${file.name} has been successfully uploaded.`,
+          });
+        }
+      }, 100);
+    }
   };
 
   return (
-    <div className="max-w-7xl mx-auto p-6">
-      {/* Header */}
-      <div className="flex items-center gap-4 mb-6">
-        <Button 
-          variant="ghost" 
-          size="sm" 
-          onClick={handleBack}
-          className="flex items-center gap-2"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Create Template
-        </Button>
-      </div>
+    <div className="grid gap-6">
+      <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <CardTitle>Create New Template</CardTitle>
+            <div className="flex items-center gap-3">
+              <Badge variant="secondary">
+                Draft
+              </Badge>
+              <Button variant="outline" size="icon" onClick={handlePreview}>
+                <Eye className="h-4 w-4" />
+              </Button>
+              <Button size="icon" onClick={handleSubmit}>
+                <Save className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-4">
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Form Section */}
-        <div className="space-y-6">
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              {/* Basic Information */}
-              <BasicInfoSection form={form} />
+          <BasicInfoSection 
+            templateData={templateData}
+            handleInputChange={handleInputChange}
+          />
 
-              {/* Header Section */}
-              <Card>
-                <CardContent className="p-6 space-y-4">
-                  <div>
-                    <Label className="text-base font-medium">Header (Optional)</Label>
-                  </div>
+          <Separator />
 
-                  <div className="flex gap-4">
-                    <FormField
-                      control={form.control}
-                      name="headerType"
-                      render={({ field }) => (
-                        <FormItem className="flex items-center space-x-2">
-                          <FormControl>
-                            <input
-                              type="radio"
-                              {...field}
-                              value="text"
-                              checked={field.value === 'text'}
-                              className="w-4 h-4"
-                            />
-                          </FormControl>
-                          <Label>Text</Label>
-                        </FormItem>
-                      )}
-                    />
+          <VariableManager 
+            variables={templateData.variables}
+            onVariableChange={handleVariableChange}
+          />
 
-                    <FormField
-                      control={form.control}
-                      name="headerType"
-                      render={({ field }) => (
-                        <FormItem className="flex items-center space-x-2">
-                          <FormControl>
-                            <input
-                              type="radio"
-                              {...field}
-                              value="media"
-                              checked={field.value === 'media'}
-                              className="w-4 h-4"
-                            />
-                          </FormControl>
-                          <Label>Media</Label>
-                        </FormItem>
-                      )}
-                    />
-                  </div>
+          <Separator />
 
-                  <FormField
-                    control={form.control}
-                    name="headerText"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormControl>
-                          <Input 
-                            placeholder="Enter text" 
-                            {...field}
-                            onChange={(e) => {
-                              field.onChange(e);
-                              updatePreview('headerText', e.target.value);
-                            }}
-                          />
-                        </FormControl>
-                        <div className="text-xs text-muted-foreground">{field.value?.length || 0}/60</div>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+          <div>
+            <Label htmlFor="template-content">Template Content</Label>
+            <Input
+              id="template-content"
+              name="content"
+              placeholder="Write your template content here..."
+              value={templateData.content}
+              onChange={handleInputChange}
+              className="mt-2"
+            />
+          </div>
 
-                  <VariableManager
-                    variables={variables}
-                    onAddVariable={addVariable}
-                    onRemoveVariable={removeVariable}
-                    onUpdateVariable={updateVariable}
-                    onResetVariables={resetVariables}
-                  />
-                </CardContent>
-              </Card>
+          <Separator />
 
-              {/* Body Section */}
-              <Card>
-                <CardContent className="p-6 space-y-4">
-                  <div>
-                    <Label className="text-base font-medium">Body</Label>
-                  </div>
-
-                  <FormField
-                    control={form.control}
-                    name="bodyText"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormControl>
-                          <Textarea 
-                            placeholder="Type here..." 
-                            {...field}
-                            className="min-h-[200px] resize-none"
-                            onChange={(e) => {
-                              field.onChange(e);
-                              updatePreview('bodyText', e.target.value);
-                            }}
-                          />
-                        </FormControl>
-                        <div className="text-xs text-muted-foreground">{field.value?.length || 0}/1024</div>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </CardContent>
-              </Card>
-
-              {/* Footer Section */}
-              <Card>
-                <CardContent className="p-6 space-y-4">
-                  <div>
-                    <Label className="text-base font-medium">Footer (Optional)</Label>
-                  </div>
-
-                  <FormField
-                    control={form.control}
-                    name="footerText"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormControl>
-                          <Input 
-                            placeholder="Enter text" 
-                            {...field}
-                            onChange={(e) => {
-                              field.onChange(e);
-                              updatePreview('footerText', e.target.value);
-                            }}
-                          />
-                        </FormControl>
-                        <div className="text-xs text-muted-foreground">{field.value?.length || 0}/60</div>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </CardContent>
-              </Card>
-
-              {/* Submit Button */}
-              <div className="flex justify-end">
-                <Button 
-                  type="submit"
-                  className="bg-green-600 hover:bg-green-700 text-white px-6"
-                >
-                  Save and submit
-                </Button>
+          <div>
+            <Label htmlFor="template-image">Upload Image</Label>
+            <Input
+              type="file"
+              id="template-image"
+              name="image"
+              onChange={handleFileUpload}
+              className="mt-2"
+            />
+            {uploadProgress > 0 && (
+              <div className="mt-2">
+                <Progress value={uploadProgress} />
+                <p className="text-sm text-muted-foreground mt-1">{uploadProgress}%</p>
               </div>
-            </form>
-          </Form>
-        </div>
+            )}
+          </div>
+        </CardContent>
+      </Card>
 
-        {/* Preview Section */}
-        <div className="lg:sticky lg:top-6">
-          <TemplatePreview data={previewData} />
-        </div>
+      <div className="flex justify-end gap-3">
+        <Button variant="secondary">
+          <Type className="w-4 h-4 mr-2" />
+          Save as Draft
+        </Button>
+        <Button>
+          <Send className="w-4 h-4 mr-2" />
+          Send for Approval
+        </Button>
       </div>
     </div>
   );
-}
+};
