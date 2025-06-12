@@ -29,19 +29,19 @@ const navigationItems = [
 ];
 
 export function AppSidebar() {
-  const { collapsed } = useSidebar();
+  const { open } = useSidebar();
   const location = useLocation();
 
   const isActive = (path: string) => location.pathname === path;
 
   return (
-    <Sidebar className={`${collapsed ? 'w-16' : 'w-64'} bg-sidebar-background border-r border-sidebar-border`}>
+    <Sidebar className={`${open ? 'w-64' : 'w-16'} bg-sidebar-background border-r border-sidebar-border`}>
       <SidebarHeader className="p-4 border-b border-sidebar-border">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
             <span className="text-primary-foreground font-bold text-sm">C</span>
           </div>
-          {!collapsed && (
+          {open && (
             <span className="text-sidebar-foreground font-semibold text-lg">construct730</span>
           )}
         </div>
@@ -65,8 +65,8 @@ export function AppSidebar() {
                           : 'text-sidebar-foreground hover:text-sidebar-accent-foreground'
                       }`}
                     >
-                      <item.icon className={`h-4 w-4 ${collapsed ? '' : 'mr-3'}`} />
-                      {!collapsed && <span>{item.title}</span>}
+                      <item.icon className={`h-4 w-4 ${open ? 'mr-3' : ''}`} />
+                      {open && <span>{item.title}</span>}
                     </Button>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
