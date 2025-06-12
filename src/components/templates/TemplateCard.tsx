@@ -3,7 +3,7 @@ import React from 'react';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Eye, Square } from 'lucide-react';
+import { Eye, Trash2 } from 'lucide-react';
 
 interface TemplateCardProps {
   template: {
@@ -30,7 +30,7 @@ export function TemplateCard({ template, onView, onDelete }: TemplateCardProps) 
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-              <Square className="w-5 h-5 text-primary" />
+              <div className="w-5 h-5 bg-primary rounded-sm" />
             </div>
             <div>
               <h3 className="font-semibold text-base group-hover:text-primary transition-colors">
@@ -69,7 +69,7 @@ export function TemplateCard({ template, onView, onDelete }: TemplateCardProps) 
               onClick={onDelete}
               className="h-8 w-8 p-0 hover:bg-destructive hover:text-destructive-foreground hover:border-destructive"
             >
-              <Square className="w-4 h-4" />
+              <Trash2 className="w-4 h-4" />
             </Button>
           </div>
         </div>

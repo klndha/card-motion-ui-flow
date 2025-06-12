@@ -11,62 +11,71 @@ const mockTemplates = [
   {
     id: '1',
     name: 'Dental Checkup Reminder',
-    category: 'Email Marketing',
-    status: 'Active',
-    lastModified: '2 hours ago',
-    thumbnail: 'https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?w=300&h=200&fit=crop',
-    description: 'A professional reminder template for routine dental checkups'
+    category: 'MARKETING',
+    status: 'APPROVED' as const,
+    language: 'English (US)',
   },
   {
     id: '2', 
     name: 'Teeth Whitening Promotion',
-    category: 'SMS Marketing',
-    status: 'Draft',
-    lastModified: '1 day ago',
-    thumbnail: 'https://images.unsplash.com/photo-1609840114035-3c981b782dfe?w=300&h=200&fit=crop',
-    description: 'Special offer template for teeth whitening services'
+    category: 'MARKETING',
+    status: 'DRAFT' as const,
+    language: 'English (US)',
   },
   {
     id: '3',
     name: 'New Patient Welcome',
-    category: 'Email Marketing', 
-    status: 'Active',
-    lastModified: '3 days ago',
-    thumbnail: 'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=300&h=200&fit=crop',
-    description: 'Welcome message for new dental practice patients'
+    category: 'MARKETING', 
+    status: 'APPROVED' as const,
+    language: 'English (US)',
   },
   {
     id: '4',
     name: 'Appointment Confirmation',
-    category: 'SMS Marketing',
-    status: 'Active', 
-    lastModified: '5 days ago',
-    thumbnail: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=300&h=200&fit=crop',
-    description: 'Automated confirmation message for scheduled appointments'
+    category: 'ADMIN',
+    status: 'PENDING' as const,
+    language: 'English (US)',
   }
 ];
 
 export function TemplateGrid() {
   const [templates] = useState(mockTemplates);
   const [filteredTemplates, setFilteredTemplates] = useState(mockTemplates);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('ALL');
+  const [selectedStatus, setSelectedStatus] = useState('ALL');
   const navigate = useNavigate();
 
-  const handleSearch = (searchTerm: string) => {
-    const filtered = templates.filter(template =>
-      template.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      template.category.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-    setFilteredTemplates(filtered);
+  const handleSearchChange = (searchTerm: string) => {
+    setSearchTerm(searchTerm);
+    filterTemplates(searchTerm, selectedCategory, selectedStatus);
   };
 
-  const handleFilter = (category: string, status: string) => {
+  const handleCategoryChange = (category: string) => {
+    setSelectedCategory(category);
+    filterTemplates(searchTerm, category, selectedStatus);
+  };
+
+  const handleStatusChange = (status: string) => {
+    setSelectedStatus(status);
+    filterTemplates(searchTerm, selectedCategory, status);
+  };
+
+  const filterTemplates = (search: string, category: string, status: string) => {
     let filtered = templates;
     
-    if (category !== 'all') {
+    if (search) {
+      filtered = filtered.filter(template =>
+        template.name.toLowerCase().includes(search.toLowerCase()) ||
+        template.category.toLowerCase().includes(search.toLowerCase())
+      );
+    }
+    
+    if (category !== 'ALL') {
       filtered = filtered.filter(template => template.category === category);
     }
     
-    if (status !== 'all') {
+    if (status !== 'ALL') {
       filtered = filtered.filter(template => template.status === status);
     }
     
@@ -77,21 +86,12 @@ export function TemplateGrid() {
     navigate('/create-template');
   };
 
-  const handleEditTemplate = (templateId: string) => {
-    console.log('Editing template:', templateId);
-    navigate(`/edit-template/${templateId}`);
+  const handleViewTemplate = () => {
+    console.log('Viewing template');
   };
 
-  const handleDuplicateTemplate = (templateId: string) => {
-    console.log('Duplicating template:', templateId);
-  };
-
-  const handleDeleteTemplate = (templateId: string) => {
-    console.log('Deleting template:', templateId);
-  };
-
-  const handleViewTemplate = (templateId: string) => {
-    console.log('Viewing template:', templateId);
+  const handleDeleteTemplate = () => {
+    console.log('Deleting template');
   };
 
   return (
@@ -109,17 +109,23 @@ export function TemplateGrid() {
         </Button>
       </div>
 
-      <SearchAndFilters onSearch={handleSearch} onFilter={handleFilter} />
+      <SearchAndFilters 
+        searchTerm={searchTerm}
+        onSearchChange={handleSearchChange}
+        selectedCategory={selectedCategory}
+        onCategoryChange={handleCategoryChange}
+        selectedStatus={selectedStatus}
+        onStatusChange={handleStatusChange}
+        totalCount={filteredTemplates.length}
+      />
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {filteredTemplates.map((template) => (
           <TemplateCard
             key={template.id}
             template={template}
-            onEdit={handleEditTemplate}
-            onDuplicate={handleDuplicateTemplate}
-            onDelete={handleDeleteTemplate}
             onView={handleViewTemplate}
+            onDelete={handleDeleteTemplate}
           />
         ))}
       </div>

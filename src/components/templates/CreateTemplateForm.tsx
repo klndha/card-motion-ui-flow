@@ -1,13 +1,11 @@
 
 import React, { useState } from 'react';
-import { ArrowLeft, Plus, X } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useNavigate } from 'react-router-dom';
 import { TemplatePreview } from './TemplatePreview';
+import { BasicInfoSection } from './forms/BasicInfoSection';
+import { VariableManager } from './forms/VariableManager';
 import { 
   Form,
   FormControl,
@@ -17,6 +15,10 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { useForm } from 'react-hook-form';
+import { Card, CardContent } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
 
 interface Variable {
   id: string;
@@ -121,77 +123,7 @@ export function CreateTemplateForm() {
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
               {/* Basic Information */}
-              <Card>
-                <CardContent className="p-6 space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <FormField
-                      control={form.control}
-                      name="templateName"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Template Name</FormLabel>
-                          <FormControl>
-                            <Input 
-                              placeholder="Template Name" 
-                              {...field}
-                              className="max-w-full"
-                            />
-                          </FormControl>
-                          <div className="text-xs text-muted-foreground">
-                            0/50
-                          </div>
-                          <div className="text-xs text-muted-foreground">
-                            whitespace and uppercase are not allowed
-                          </div>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="category"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Category</FormLabel>
-                          <FormControl>
-                            <select 
-                              {...field}
-                              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                            >
-                              <option value="MARKETING">MARKETING</option>
-                              <option value="UTILITY">UTILITY</option>
-                              <option value="AUTHENTICATION">AUTHENTICATION</option>
-                            </select>
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-
-                  <FormField
-                    control={form.control}
-                    name="language"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Language</FormLabel>
-                        <FormControl>
-                          <select 
-                            {...field}
-                            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                          >
-                            <option value="English (United Kingdom)">English (United Kingdom)</option>
-                            <option value="English (United States)">English (United States)</option>
-                            <option value="Spanish">Spanish</option>
-                          </select>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </CardContent>
-              </Card>
+              <BasicInfoSection form={form} />
 
               {/* Header Section */}
               <Card>
@@ -255,32 +187,19 @@ export function CreateTemplateForm() {
                             }}
                           />
                         </FormControl>
-                        <div className="text-xs text-muted-foreground">0/60</div>
+                        <div className="text-xs text-muted-foreground">{field.value?.length || 0}/60</div>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
 
-                  <div className="flex gap-2">
-                    <Button 
-                      type="button" 
-                      variant="outline" 
-                      size="sm"
-                      onClick={addVariable}
-                      className="text-green-600 border-green-600 hover:bg-green-50"
-                    >
-                      Add Variable
-                    </Button>
-                    <Button 
-                      type="button" 
-                      variant="outline" 
-                      size="sm"
-                      onClick={resetVariables}
-                      className="text-orange-600 border-orange-600 hover:bg-orange-50"
-                    >
-                      Reset Variable
-                    </Button>
-                  </div>
+                  <VariableManager
+                    variables={variables}
+                    onAddVariable={addVariable}
+                    onRemoveVariable={removeVariable}
+                    onUpdateVariable={updateVariable}
+                    onResetVariables={resetVariables}
+                  />
                 </CardContent>
               </Card>
 
@@ -307,32 +226,11 @@ export function CreateTemplateForm() {
                             }}
                           />
                         </FormControl>
-                        <div className="text-xs text-muted-foreground">0/1024</div>
+                        <div className="text-xs text-muted-foreground">{field.value?.length || 0}/1024</div>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
-
-                  <div className="flex gap-2">
-                    <Button 
-                      type="button" 
-                      variant="outline" 
-                      size="sm"
-                      onClick={addVariable}
-                      className="text-green-600 border-green-600 hover:bg-green-50"
-                    >
-                      Add Variable
-                    </Button>
-                    <Button 
-                      type="button" 
-                      variant="outline" 
-                      size="sm"
-                      onClick={resetVariables}
-                      className="text-orange-600 border-orange-600 hover:bg-orange-50"
-                    >
-                      Reset Variable
-                    </Button>
-                  </div>
                 </CardContent>
               </Card>
 
@@ -358,158 +256,13 @@ export function CreateTemplateForm() {
                             }}
                           />
                         </FormControl>
-                        <div className="text-xs text-muted-foreground">0/60</div>
+                        <div className="text-xs text-muted-foreground">{field.value?.length || 0}/60</div>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
                 </CardContent>
               </Card>
-
-              {/* Buttons Section */}
-              <Card>
-                <CardContent className="p-6 space-y-4">
-                  <div>
-                    <Label className="text-base font-medium">Buttons (Optional)</Label>
-                  </div>
-
-                  <div className="flex gap-4">
-                    <FormField
-                      control={form.control}
-                      name="buttonType"
-                      render={({ field }) => (
-                        <FormItem className="flex items-center space-x-2">
-                          <FormControl>
-                            <input
-                              type="radio"
-                              {...field}
-                              value="callToAction"
-                              checked={field.value === 'callToAction'}
-                              className="w-4 h-4"
-                            />
-                          </FormControl>
-                          <Label>Call To Action</Label>
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="buttonType"
-                      render={({ field }) => (
-                        <FormItem className="flex items-center space-x-2">
-                          <FormControl>
-                            <input
-                              type="radio"
-                              {...field}
-                              value="quickReply"
-                              checked={field.value === 'quickReply'}
-                              className="w-4 h-4"
-                            />
-                          </FormControl>
-                          <Label>Quick Reply</Label>
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
-                    <div>
-                      <select className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
-                        <option>Visit Website</option>
-                        <option>Call Now</option>
-                        <option>Get Directions</option>
-                      </select>
-                    </div>
-
-                    <FormField
-                      control={form.control}
-                      name="buttonText"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormControl>
-                            <Input 
-                              placeholder="Button text" 
-                              {...field}
-                              onChange={(e) => {
-                                field.onChange(e);
-                                updatePreview('buttonText', e.target.value);
-                              }}
-                            />
-                          </FormControl>
-                          <div className="text-xs text-muted-foreground">0/20</div>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="buttonUrl"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormControl>
-                            <Input 
-                              placeholder="https://www.example.com" 
-                              {...field}
-                              onChange={(e) => {
-                                field.onChange(e);
-                                updatePreview('buttonUrl', e.target.value);
-                              }}
-                            />
-                          </FormControl>
-                          <div className="text-xs text-muted-foreground">0/2000</div>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-
-                  <Button 
-                    type="button" 
-                    variant="outline" 
-                    size="sm"
-                    className="text-green-600 border-green-600 hover:bg-green-50"
-                  >
-                    Add Button
-                  </Button>
-                </CardContent>
-              </Card>
-
-              {/* Variables Section */}
-              {variables.length > 0 && (
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Variables</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    {variables.map((variable) => (
-                      <div key={variable.id} className="flex gap-2 items-center">
-                        <Input
-                          placeholder="Variable name"
-                          value={variable.name}
-                          onChange={(e) => updateVariable(variable.id, 'name', e.target.value)}
-                          className="flex-1"
-                        />
-                        <Input
-                          placeholder="Default value"
-                          value={variable.value}
-                          onChange={(e) => updateVariable(variable.id, 'value', e.target.value)}
-                          className="flex-1"
-                        />
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="sm"
-                          onClick={() => removeVariable(variable.id)}
-                        >
-                          <X className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    ))}
-                  </CardContent>
-                </Card>
-              )}
 
               {/* Submit Button */}
               <div className="flex justify-end">
