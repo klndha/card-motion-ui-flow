@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import {
   Sidebar,
   SidebarContent,
@@ -22,7 +22,7 @@ import {
 } from 'lucide-react';
 
 const navigationItems = [
-  { title: 'Templates', url: '/', icon: Square, active: true },
+  { title: 'Templates', url: '/', icon: Square },
   { title: 'Categories', url: '/categories', icon: Circle },
   { title: 'Analytics', url: '/analytics', icon: Triangle },
   { title: 'Settings', url: '/settings', icon: Star },
@@ -31,8 +31,13 @@ const navigationItems = [
 export function AppSidebar() {
   const { open } = useSidebar();
   const location = useLocation();
+  const navigate = useNavigate();
 
   const isActive = (path: string) => location.pathname === path;
+
+  const handleNavigation = (url: string) => {
+    navigate(url);
+  };
 
   return (
     <Sidebar className={`${open ? 'w-64' : 'w-16'} bg-sidebar-background border-r border-sidebar-border`}>
@@ -64,6 +69,7 @@ export function AppSidebar() {
                           ? 'bg-primary text-primary-foreground hover:bg-primary/90' 
                           : 'text-sidebar-foreground hover:text-sidebar-accent-foreground'
                       }`}
+                      onClick={() => handleNavigation(item.url)}
                     >
                       <item.icon className={`h-4 w-4 ${open ? 'mr-3' : ''}`} />
                       {open && <span>{item.title}</span>}

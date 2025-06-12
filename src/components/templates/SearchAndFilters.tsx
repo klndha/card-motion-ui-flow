@@ -4,7 +4,8 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { Search, Star } from 'lucide-react';
+import { Search, Star, RotateCcw } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 interface SearchAndFiltersProps {
   searchTerm: string;
@@ -25,6 +26,16 @@ export function SearchAndFilters({
   onStatusChange,
   totalCount
 }: SearchAndFiltersProps) {
+  const navigate = useNavigate();
+
+  const handleCreateTemplate = () => {
+    navigate('/create-template');
+  };
+
+  const handleRefresh = () => {
+    window.location.reload();
+  };
+
   return (
     <div className="space-y-4">
       <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
@@ -39,13 +50,21 @@ export function SearchAndFilters({
             />
           </div>
           
-          <Button className="bg-primary hover:bg-primary/90 text-primary-foreground">
+          <Button 
+            className="bg-primary hover:bg-primary/90 text-primary-foreground"
+            onClick={handleCreateTemplate}
+          >
             <Star className="w-4 h-4 mr-2" />
             Create Template
           </Button>
         </div>
         
-        <Button variant="outline" className="text-primary border-primary hover:bg-primary hover:text-primary-foreground">
+        <Button 
+          variant="outline" 
+          className="text-primary border-primary hover:bg-primary hover:text-primary-foreground"
+          onClick={handleRefresh}
+        >
+          <RotateCcw className="w-4 h-4 mr-2" />
           Refresh
         </Button>
       </div>

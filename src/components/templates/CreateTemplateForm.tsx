@@ -19,6 +19,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
+import { useToast } from '@/hooks/use-toast';
 
 interface Variable {
   id: string;
@@ -41,6 +42,7 @@ interface FormData {
 
 export function CreateTemplateForm() {
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [variables, setVariables] = useState<Variable[]>([]);
   const [previewData, setPreviewData] = useState({
     headerText: '',
@@ -95,7 +97,16 @@ export function CreateTemplateForm() {
   const onSubmit = (data: FormData) => {
     console.log('Form submitted:', data);
     console.log('Variables:', variables);
-    // Handle form submission
+    
+    toast({
+      title: "Template Created Successfully!",
+      description: `Template "${data.templateName}" has been saved and submitted for approval.`,
+    });
+    
+    // Navigate back to templates page after submission
+    setTimeout(() => {
+      navigate('/');
+    }, 2000);
   };
 
   const updatePreview = (field: string, value: string) => {

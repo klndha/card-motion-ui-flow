@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { TemplateCard } from './TemplateCard';
 import { SearchAndFilters } from './SearchAndFilters';
 import { useNavigate } from 'react-router-dom';
+import { useToast } from '@/hooks/use-toast';
 
 // Mock data for templates
 const mockTemplates = [
@@ -39,12 +40,13 @@ const mockTemplates = [
 ];
 
 export function TemplateGrid() {
-  const [templates] = useState(mockTemplates);
+  const [templates, setTemplates] = useState(mockTemplates);
   const [filteredTemplates, setFilteredTemplates] = useState(mockTemplates);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('ALL');
   const [selectedStatus, setSelectedStatus] = useState('ALL');
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   const handleSearchChange = (searchTerm: string) => {
     setSearchTerm(searchTerm);
@@ -86,12 +88,19 @@ export function TemplateGrid() {
     navigate('/create-template');
   };
 
-  const handleViewTemplate = () => {
-    console.log('Viewing template');
+  const handleViewTemplate = (id: string) => {
+    const template = templates.find(t => t.id === id);
+    console.log(`Viewing template: ${template?.name}`);
+    toast({
+      title: "Template Preview",
+      description: `Opening preview for ${template?.name}`,
+    });
   };
 
-  const handleDeleteTemplate = () => {
-    console.log('Deleting template');
+  const handleDeleteTemplate = (id: string) => {
+    const updatedTemplates = templates.filter(t => t.id !== id);
+    setTemplates(updatedTemplates);
+    filterTemplates(searchTerm, selectedCategory, selectedStatus);
   };
 
   return (
