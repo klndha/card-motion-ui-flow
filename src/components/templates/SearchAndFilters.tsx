@@ -1,17 +1,33 @@
+
 import React, { useState } from 'react';
-import { Input } from '@/components/Input';
-import { Button } from '@/components/Button';
-import { Badge } from '@/components/Badge';
-import { Search, Filter, X } from 'lucide-react';
+import {
+  Box,
+  TextField,
+  Button,
+  Paper,
+  Typography,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Grid,
+  IconButton
+} from '@mui/material';
+import { Search, Filter, Clear } from '@mui/icons-material';
 
 interface SearchAndFiltersProps {
   onSearch: (searchTerm: string) => void;
   onFilter: (filters: { category?: string; status?: string }) => void;
-  categories: string[];
-  statuses: string[];
+  categories?: string[];
+  statuses?: string[];
 }
 
-export function SearchAndFilters({ onSearch, onFilter, categories, statuses }: SearchAndFiltersProps) {
+export function SearchAndFilters({ 
+  onSearch, 
+  onFilter, 
+  categories = ['MARKETING', 'ADMIN'], 
+  statuses = ['APPROVED', 'PENDING', 'DRAFT'] 
+}: SearchAndFiltersProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
@@ -22,21 +38,17 @@ export function SearchAndFilters({ onSearch, onFilter, categories, statuses }: S
     onSearch(e.target.value);
   };
 
-  const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleCategoryChange = (e: any) => {
     setCategoryFilter(e.target.value);
   };
 
-  const handleStatusChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleStatusChange = (e: any) => {
     setStatusFilter(e.target.value);
   };
 
   const applyFilters = () => {
     onFilter({ category: categoryFilter, status: statusFilter });
     setIsFilterOpen(false);
-  };
-
-  const toggleFilter = () => {
-    setIsFilterOpen(!isFilterOpen);
   };
 
   const clearFilters = () => {
@@ -46,81 +58,90 @@ export function SearchAndFilters({ onSearch, onFilter, categories, statuses }: S
   };
 
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex items-center">
-        <div className="relative flex-1">
-          <Input
-            type="search"
-            placeholder="Search templates..."
-            value={searchTerm}
-            onChange={handleSearchChange}
-            className="pr-10"
-          />
-          {searchTerm && (
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => {
-                setSearchTerm('');
-                onSearch('');
-              }}
-              className="absolute right-2 top-1/2 -translate-y-1/2 hover:bg-accent"
-            >
-              <X className="h-4 w-4" />
-            </Button>
-          )}
-        </div>
-        <Button variant="outline" className="ml-3" onClick={toggleFilter}>
-          <Filter className="h-4 w-4 mr-2" />
+    <Box sx={{ mb: 3 }}>
+      <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
+        <TextField
+          placeholder="Search templates..."
+          value={searchTerm}
+          onChange={handleSearchChange}
+          variant="outlined"
+          size="small"
+          sx={{ flex: 1 }}
+          InputProps={{
+            startAdornment: <Search sx={{ mr: 1, color: 'text.secondary' }} />,
+            endAdornment: searchTerm && (
+              <IconButton
+                size="small"
+                onClick={() => {
+                  setSearchTerm('');
+                  onSearch('');
+                }}
+              >
+                <Clear />
+              </IconButton>
+            )
+          }}
+        />
+        <Button
+          variant="outlined"
+          startIcon={<Filter />}
+          onClick={() => setIsFilterOpen(!isFilterOpen)}
+        >
           Filter
         </Button>
-      </div>
+      </Box>
 
       {isFilterOpen && (
-        <div className="border rounded-md p-4 bg-secondary/30">
-          <h4 className="text-sm font-medium mb-2">Filter Templates</h4>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="category">Category</Label>
-              <select
-                id="category"
-                className="w-full mt-1 p-2 border rounded-md bg-background"
-                value={categoryFilter}
-                onChange={handleCategoryChange}
-              >
-                <option value="">All Categories</option>
-                {categories.map((category) => (
-                  <option key={category} value={category}>
-                    {category}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <Label htmlFor="status">Status</Label>
-              <select
-                id="status"
-                className="w-full mt-1 p-2 border rounded-md bg-background"
-                value={statusFilter}
-                onChange={handleStatusChange}
-              >
-                <option value="">All Statuses</option>
-                {statuses.map((status) => (
-                  <option key={status} value={status}>
-                    {status}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-          <div className="flex justify-end mt-4 gap-2">
-            <Button variant="ghost" onClick={clearFilters}>
+        <Paper sx={{ p: 3, mb: 2 }}>
+          <Typography variant="h6" sx={{ mb: 2 }}>
+            Filter Templates
+          </Typography>
+          <Grid container spacing={2}>
+            <Grid item xs={12} md={6}>
+              <FormControl fullWidth size="small">
+                <InputLabel>Category</InputLabel>
+                <Select
+                  value={categoryFilter}
+                  onChange={handleCategoryChange}
+                  label="Category"
+                >
+                  <MenuItem value="">All Categories</MenuItem>
+                  {categories.map((category) => (
+                    <MenuItem key={category} value={category}>
+                      {category}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <FormControl fullWidth size="small">
+                <InputLabel>Status</InputLabel>
+                <Select
+                  value={statusFilter}
+                  onChange={handleStatusChange}
+                  label="Status"
+                >
+                  <MenuItem value="">All Statuses</MenuItem>
+                  {statuses.map((status) => (
+                    <MenuItem key={status} value={status}>
+                      {status}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
+          </Grid>
+          <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1, mt: 2 }}>
+            <Button variant="text" onClick={clearFilters}>
               Clear
             </Button>
-            <Button onClick={applyFilters}>Apply</Button>
-          </div>
-        </div>
+            <Button variant="contained" onClick={applyFilters}>
+              Apply
+            </Button>
+          </Box>
+        </Paper>
       )}
-    </div>
+    </Box>
   );
 }

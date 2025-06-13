@@ -1,13 +1,17 @@
 
 import React, { useState } from 'react';
-import { Plus } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { 
+  Box, 
+  Typography, 
+  Button, 
+  Grid,
+  Container
+} from '@mui/material';
+import { Add } from '@mui/icons-material';
 import { TemplateCard } from './TemplateCard';
 import { SearchAndFilters } from './SearchAndFilters';
 import { useNavigate } from 'react-router-dom';
-import { useToast } from '@/hooks/use-toast';
 
-// Mock data for templates
 const mockTemplates = [
   {
     id: '1',
@@ -42,43 +46,30 @@ const mockTemplates = [
 export function TemplateGrid() {
   const [templates, setTemplates] = useState(mockTemplates);
   const [filteredTemplates, setFilteredTemplates] = useState(mockTemplates);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('ALL');
-  const [selectedStatus, setSelectedStatus] = useState('ALL');
   const navigate = useNavigate();
-  const { toast } = useToast();
 
-  const handleSearchChange = (searchTerm: string) => {
-    setSearchTerm(searchTerm);
-    filterTemplates(searchTerm, selectedCategory, selectedStatus);
+  const handleSearch = (searchTerm: string) => {
+    if (!searchTerm) {
+      setFilteredTemplates(templates);
+      return;
+    }
+    
+    const filtered = templates.filter(template =>
+      template.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      template.category.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setFilteredTemplates(filtered);
   };
 
-  const handleCategoryChange = (category: string) => {
-    setSelectedCategory(category);
-    filterTemplates(searchTerm, category, selectedStatus);
-  };
-
-  const handleStatusChange = (status: string) => {
-    setSelectedStatus(status);
-    filterTemplates(searchTerm, selectedCategory, status);
-  };
-
-  const filterTemplates = (search: string, category: string, status: string) => {
+  const handleFilter = (filters: { category?: string; status?: string }) => {
     let filtered = templates;
     
-    if (search) {
-      filtered = filtered.filter(template =>
-        template.name.toLowerCase().includes(search.toLowerCase()) ||
-        template.category.toLowerCase().includes(search.toLowerCase())
-      );
+    if (filters.category) {
+      filtered = filtered.filter(template => template.category === filters.category);
     }
     
-    if (category !== 'ALL') {
-      filtered = filtered.filter(template => template.category === category);
-    }
-    
-    if (status !== 'ALL') {
-      filtered = filtered.filter(template => template.status === status);
+    if (filters.status) {
+      filtered = filtered.filter(template => template.status === filters.status);
     }
     
     setFilteredTemplates(filtered);
@@ -91,60 +82,68 @@ export function TemplateGrid() {
   const handleViewTemplate = (id: string) => {
     const template = templates.find(t => t.id === id);
     console.log(`Viewing template: ${template?.name}`);
-    toast({
-      title: "Template Preview",
-      description: `Opening preview for ${template?.name}`,
-    });
   };
 
   const handleDeleteTemplate = (id: string) => {
-    const updatedTemplates = templates.filter(t => t.id !== id);
-    setTemplates(updatedTemplates);
-    filterTemplates(searchTerm, selectedCategory, selectedStatus);
+    if (window.confirm('Are you sure you want to delete this template?')) {
+      const updatedTemplates = templates.filter(t => t.id !== id);
+      setTemplates(updatedTemplates);
+      setFilteredTemplates(updatedTemplates);
+    }
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <div>
-          <h2 className="text-2xl font-bold tracking-tight">Marketing Templates</h2>
-          <p className="text-muted-foreground">
-            Create and manage your dental marketing campaigns
-          </p>
-        </div>
-        <Button onClick={handleCreateTemplate} className="bg-primary hover:bg-primary/90">
-          <Plus className="mr-2 h-4 w-4" />
-          Create Template
-        </Button>
-      </div>
+    <Container maxWidth="xl">
+      <Box sx={{ py: 3 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
+          <Box>
+            <Typography variant="h4" component="h2" sx={{ fontWeight: 700, mb: 1 }}>
+              Marketing Templates
+            </Typography>
+            <Typography variant="body1" color="text.secondary">
+              Create and manage your dental marketing campaigns
+            </Typography>
+          </Box>
+          <Button 
+            variant="contained" 
+            startIcon={<Add />}
+            onClick={handleCreateTemplate}
+            size="large"
+          >
+            Create Template
+          </Button>
+        </Box>
 
-      <SearchAndFilters 
-        searchTerm={searchTerm}
-        onSearchChange={handleSearchChange}
-        selectedCategory={selectedCategory}
-        onCategoryChange={handleCategoryChange}
-        selectedStatus={selectedStatus}
-        onStatusChange={handleStatusChange}
-        totalCount={filteredTemplates.length}
-      />
+        <SearchAndFilters 
+          onSearch={handleSearch}
+          onFilter={handleFilter}
+          categories={['MARKETING', 'ADMIN']}
+          statuses={['APPROVED', 'PENDING', 'DRAFT']}
+        />
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {filteredTemplates.map((template) => (
-          <TemplateCard
-            key={template.id}
-            template={template}
-            onView={handleViewTemplate}
-            onDelete={handleDeleteTemplate}
-          />
-        ))}
-      </div>
+        <Grid container spacing={3}>
+          {filteredTemplates.map((template) => (
+            <Grid item xs={12} sm={6} md={4} lg={3} key={template.id}>
+              <TemplateCard
+                template={template}
+                onView={handleViewTemplate}
+                onDelete={handleDeleteTemplate}
+              />
+            </Grid>
+          ))}
+        </Grid>
 
-      {filteredTemplates.length === 0 && (
-        <div className="text-center py-12">
-          <p className="text-muted-foreground text-lg">No templates found</p>
-          <p className="text-muted-foreground">Try adjusting your search or filters</p>
-        </div>
-      )}
-    </div>
+        {filteredTemplates.length === 0 && (
+          <Box sx={{ textAlign: 'center', py: 8 }}>
+            <Typography variant="h6" color="text.secondary" sx={{ mb: 1 }}>
+              No templates found
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Try adjusting your search or filters
+            </Typography>
+          </Box>
+        )}
+      </Box>
+    </Container>
   );
 }
