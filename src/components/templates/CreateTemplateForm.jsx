@@ -16,9 +16,6 @@ import {
   Chip,
   IconButton,
   Paper,
-  Divider,
-  Switch,
-  FormControlLabel,
   Dialog,
   DialogTitle,
   DialogContent,
@@ -29,7 +26,6 @@ import {
   Save,
   Preview,
   Send,
-  CloudUpload,
   Add,
   Delete,
   Phone,
@@ -69,7 +65,6 @@ export function CreateTemplateForm() {
   });
 
   const [previewOpen, setPreviewOpen] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState({});
 
   const handleInputChange = (field) => (event) => {
     setTemplateData(prev => ({
@@ -94,23 +89,6 @@ export function CreateTemplateForm() {
         ...prev,
         mediaFiles: [...prev.mediaFiles, newFile]
       }));
-
-      // Simulate upload progress
-      let progress = 0;
-      const interval = setInterval(() => {
-        progress += 10;
-        setUploadProgress(prev => ({ ...prev, [fileId]: progress }));
-        if (progress >= 100) {
-          clearInterval(interval);
-          setTimeout(() => {
-            setUploadProgress(prev => {
-              const newProgress = { ...prev };
-              delete newProgress[fileId];
-              return newProgress;
-            });
-          }, 1000);
-        }
-      }, 100);
     });
   };
 
@@ -167,7 +145,7 @@ export function CreateTemplateForm() {
     <Box sx={{ height: '100vh', overflow: 'hidden' }}>
       <Grid container sx={{ height: '100%' }}>
         {/* Scrollable Creation Panel */}
-        <Grid item xs={12} md={8}>
+        <Grid xs={12} md={8}>
           <Box sx={{ height: '100%', overflow: 'auto', p: 3 }}>
             <Box sx={{ mb: 3 }}>
               <Typography variant="h4" sx={{ fontWeight: 600, mb: 1 }}>
@@ -192,7 +170,7 @@ export function CreateTemplateForm() {
               />
               <CardContent>
                 <Grid container spacing={3}>
-                  <Grid item xs={12} md={6}>
+                  <Grid xs={12} md={6}>
                     <TextField
                       fullWidth
                       label="Template Name"
@@ -201,7 +179,7 @@ export function CreateTemplateForm() {
                       required
                     />
                   </Grid>
-                  <Grid item xs={12} md={6}>
+                  <Grid xs={12} md={6}>
                     <FormControl fullWidth>
                       <InputLabel>Category</InputLabel>
                       <Select
@@ -215,7 +193,7 @@ export function CreateTemplateForm() {
                       </Select>
                     </FormControl>
                   </Grid>
-                  <Grid item xs={12} md={6}>
+                  <Grid xs={12} md={6}>
                     <FormControl fullWidth>
                       <InputLabel>Language</InputLabel>
                       <Select
@@ -229,7 +207,7 @@ export function CreateTemplateForm() {
                       </Select>
                     </FormControl>
                   </Grid>
-                  <Grid item xs={12} md={6}>
+                  <Grid xs={12} md={6}>
                     <FormControl fullWidth>
                       <InputLabel>Status</InputLabel>
                       <Select
@@ -253,7 +231,7 @@ export function CreateTemplateForm() {
               <CardContent>
                 <Grid container spacing={2} sx={{ mb: 2 }}>
                   {mediaTypes.map((media) => (
-                    <Grid item xs={12} sm={4} key={media.type}>
+                    <Grid xs={12} sm={4} key={media.type}>
                       <Button
                         component="label"
                         variant="outlined"
@@ -307,7 +285,7 @@ export function CreateTemplateForm() {
               <CardHeader title="Template Content" />
               <CardContent>
                 <Grid container spacing={3}>
-                  <Grid item xs={12}>
+                  <Grid xs={12}>
                     <TextField
                       fullWidth
                       label="Header Text"
@@ -316,7 +294,7 @@ export function CreateTemplateForm() {
                       placeholder="Enter header text..."
                     />
                   </Grid>
-                  <Grid item xs={12}>
+                  <Grid xs={12}>
                     <TextField
                       fullWidth
                       multiline
@@ -327,7 +305,7 @@ export function CreateTemplateForm() {
                       placeholder="Enter your main message..."
                     />
                   </Grid>
-                  <Grid item xs={12}>
+                  <Grid xs={12}>
                     <TextField
                       fullWidth
                       label="Footer Text"
@@ -362,7 +340,7 @@ export function CreateTemplateForm() {
 
                 {templateData.communicationType === 'call_to_action' && (
                   <Grid container spacing={3}>
-                    <Grid item xs={12} md={6}>
+                    <Grid xs={12} md={6}>
                       <TextField
                         fullWidth
                         label="Button Text"
@@ -371,7 +349,7 @@ export function CreateTemplateForm() {
                         placeholder="Call Now"
                       />
                     </Grid>
-                    <Grid item xs={12} md={6}>
+                    <Grid xs={12} md={6}>
                       <TextField
                         fullWidth
                         label="Website URL"
@@ -383,7 +361,7 @@ export function CreateTemplateForm() {
                         }}
                       />
                     </Grid>
-                    <Grid item xs={12} md={6}>
+                    <Grid xs={12} md={6}>
                       <TextField
                         fullWidth
                         label="Phone Number"
@@ -420,7 +398,7 @@ export function CreateTemplateForm() {
                     {templateData.variables.map((variable) => (
                       <Paper key={variable.id} sx={{ p: 2, mb: 2 }}>
                         <Grid container spacing={2} alignItems="center">
-                          <Grid item xs={12} md={4}>
+                          <Grid xs={12} md={4}>
                             <TextField
                               fullWidth
                               size="small"
@@ -429,7 +407,7 @@ export function CreateTemplateForm() {
                               onChange={(e) => updateVariable(variable.id, 'name', e.target.value)}
                             />
                           </Grid>
-                          <Grid item xs={12} md={6}>
+                          <Grid xs={12} md={6}>
                             <TextField
                               fullWidth
                               size="small"
@@ -438,7 +416,7 @@ export function CreateTemplateForm() {
                               onChange={(e) => updateVariable(variable.id, 'defaultValue', e.target.value)}
                             />
                           </Grid>
-                          <Grid item xs={12} md={2}>
+                          <Grid xs={12} md={2}>
                             <IconButton 
                               color="error" 
                               onClick={() => removeVariable(variable.id)}
@@ -470,7 +448,7 @@ export function CreateTemplateForm() {
         </Grid>
 
         {/* Static Preview Panel */}
-        <Grid item xs={12} md={4}>
+        <Grid xs={12} md={4}>
           <Box sx={{ height: '100%', borderLeft: 1, borderColor: 'divider', bgcolor: 'grey.50' }}>
             <TemplatePreview data={templateData} />
           </Box>
