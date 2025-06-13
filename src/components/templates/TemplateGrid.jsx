@@ -123,7 +123,7 @@ export function TemplateGrid() {
 
         <Grid container spacing={3}>
           {filteredTemplates.map((template) => (
-            <Grid item xs={12} sm={6} md={4} lg={3} key={template.id}>
+            <Grid xs={12} sm={6} md={4} lg={3} key={template.id}>
               <TemplateCard
                 template={template}
                 onView={handleViewTemplate}
