@@ -4,7 +4,7 @@ import {
   Box, 
   Typography, 
   Button, 
-  Grid2 as Grid,
+  Grid,
   Container
 } from '@mui/material';
 import { Add } from '@mui/icons-material';
@@ -123,7 +123,7 @@ export function TemplateGrid() {
 
         <Grid container spacing={3}>
           {filteredTemplates.map((template) => (
-            <Grid xs={12} sm={6} md={4} lg={3} key={template.id}>
+            <Grid item xs={12} sm={6} md={4} lg={3} key={template.id}>
               <TemplateCard
                 template={template}
                 onView={handleViewTemplate}
@@ -147,3 +147,4 @@ export function TemplateGrid() {
     </Container>
   );
 }
+
