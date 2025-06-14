@@ -4,7 +4,7 @@ import {
   Box, 
   Typography, 
   Button, 
-  Grid,
+  Grid2 as Grid,
   Container
 } from '@mui/material';
 import { Add } from '@mui/icons-material';

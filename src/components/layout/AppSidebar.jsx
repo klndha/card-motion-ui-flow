@@ -14,7 +14,7 @@ import {
 import { 
   Square,
   Circle,
-  Triangle,
+  ChangeHistory,
   Star
 } from '@mui/icons-material';
 import { Sidebar, SidebarContent, useSidebar } from '../ui/sidebar';
@@ -22,7 +22,7 @@ import { Sidebar, SidebarContent, useSidebar } from '../ui/sidebar';
 const navigationItems = [
   { title: 'Templates', url: '/', icon: Square },
   { title: 'Categories', url: '/categories', icon: Circle },
-  { title: 'Analytics', url: '/analytics', icon: Triangle },
+  { title: 'Analytics', url: '/analytics', icon: ChangeHistory },
   { title: 'Settings', url: '/settings', icon: Star },
 ];
 
